@@ -1,0 +1,25 @@
+[gd_scene load_steps=1 format=3]
+
+[node name="UI" type="CanvasLayer"]
+layer = 100
+
+[node name="Crosshair" type="Control" parent="."]
+anchors_ready = true
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+script = SubResource("GDScript_1")
+
+[sub_resource type="GDScript" id="GDScript_1"]
+script_class = "Crosshair"
+source_code = "extends Control
+
+func _draw():
+	var center = Vector2(10, 10)
+	draw_circle(center, 3.0, Color.WHITE)
+"
