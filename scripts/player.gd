@@ -81,13 +81,14 @@ func _physics_process(delta: float) -> void:
 	if Input.is_action_pressed("ui_up") or Input.is_key_pressed(KEY_W):
 		input_z = 1.0
 	
-	# Make ONLY forward/backward relative to camera direction
+	# Make movement proper - W/S forward/back by camera, A/D strafe left/right by camera horizontal
 	if input_x != 0.0 or input_z != 0.0:
-		# Get forward vector based on camera's horizontal rotation
+		# Get forward and right vectors based on camera's HORIZONTAL rotation only
 		var forward = Vector3(sin(camera_rot.y), 0, -cos(camera_rot.y))
+		var right = Vector3(cos(camera_rot.y), 0, sin(camera_rot.y))
 		
-		# Forward/backward follow camera, left/right in world space
-		move_input = (Vector3(input_x, 0, 0) + forward * input_z).normalized()
+		# W/S = forward/backward, A/D = left/right strafe
+		move_input = (forward * input_z + right * input_x).normalized()
 	else:
 		move_input = Vector3.ZERO
 	
