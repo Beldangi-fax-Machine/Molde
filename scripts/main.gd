@@ -3,17 +3,11 @@ extends Node3D
 func _ready():
 	print("Main scene ready")
 	
-	# Set up environment with gradient sky
+	# Set up environment with simple sky
 	var world_env = WorldEnvironment.new()
 	var env = Environment.new()
-	env.background_mode = Environment.BG_SKY
-	
-	# Create sky gradient
-	var sky = Sky.new()
-	var sky_material = StandardMaterial3D.new()
-	sky_material.albedo_color = Color(0.5, 0.8, 1.0)
-	sky.material = sky_material
-	env.sky = sky
+	env.background_mode = Environment.BG_COLOR
+	env.background_color = Color(0.5, 0.8, 1.0)  # Light blue sky
 	
 	world_env.environment = env
 	add_child(world_env)
