@@ -67,6 +67,27 @@ func _input(event: InputEvent) -> void:
 				Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 			else:
 				Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		
+		# Arrow keys for camera rotation
+		if event.pressed:
+			var arrow_sensitivity = 0.05
+			if event.keycode == KEY_RIGHT:
+				camera_rot.y -= arrow_sensitivity
+				if camera_rot.y < -PI:
+					camera_rot.y += TAU
+			elif event.keycode == KEY_LEFT:
+				camera_rot.y += arrow_sensitivity
+				if camera_rot.y > PI:
+					camera_rot.y -= TAU
+			elif event.keycode == KEY_UP:
+				camera_rot.x -= arrow_sensitivity
+				camera_rot.x = clamp(camera_rot.x, -PI/2.2, PI/2.2)
+			elif event.keycode == KEY_DOWN:
+				camera_rot.x += arrow_sensitivity
+				camera_rot.x = clamp(camera_rot.x, -PI/2.2, PI/2.2)
+			
+			if camera:
+				camera.rotation = camera_rot
 
 func _physics_process(delta: float) -> void:
 	var input_x = 0.0
