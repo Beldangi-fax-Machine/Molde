@@ -19,17 +19,17 @@ func _create_flat_ground() -> void:
 	mesh_inst.mesh = mesh
 	mesh_inst.position.y = 3.5
 	
-	# Load and apply shader material
+	# Load and apply shader material for checkerboard green ground
 	var shader = load("res://shaders/terrain.gdshader") as Shader
 	if shader:
 		var mat = ShaderMaterial.new()
 		mat.shader = shader
 		mesh_inst.set_surface_override_material(0, mat)
 	else:
-		# Fallback to standard material if shader not found
+		# Fallback to bright green if shader fails
 		var mat = StandardMaterial3D.new()
-		mat.albedo_color = Color(0.1, 0.35, 0.1)
-		mat.roughness = 0.9
+		mat.albedo_color = Color(0.0, 0.8, 0.0)
+		mat.roughness = 0.8
 		mesh_inst.set_surface_override_material(0, mat)
 	
 	add_child(mesh_inst)

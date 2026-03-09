@@ -87,8 +87,8 @@ func _physics_process(delta: float) -> void:
 		var forward = Vector3(sin(camera_rot.y), 0, -cos(camera_rot.y))
 		var right = Vector3(cos(camera_rot.y), 0, sin(camera_rot.y))
 		
-		# Calculate movement direction relative to camera
-		move_input = (forward * input_z + right * input_x).normalized()
+		# Calculate movement direction relative to camera (negate input_z: W=-1, S=1)
+		move_input = (forward * -input_z + right * input_x).normalized()
 	else:
 		move_input = Vector3.ZERO
 	

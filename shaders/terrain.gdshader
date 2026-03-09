@@ -11,13 +11,13 @@ void fragment() {
 	float checker_z = mod(floor(world_pos.z / checker_size), 2.0);
 	float pattern = mod(checker_x + checker_z, 2.0);
 	
-	// Vibrant green colors for grass
-	vec3 dark_green = vec3(0.0, 0.6, 0.0);
-	vec3 bright_green = vec3(0.2, 0.8, 0.0);
+	// Bright green colors
+	vec3 dark_green = vec3(0.0, 0.7, 0.0);
+	vec3 bright_green = vec3(0.3, 1.0, 0.1);
 	
 	// Mix between dark and bright green
 	vec3 color = mix(dark_green, bright_green, pattern);
 	
 	ALBEDO = color;
-	ROUGHNESS = 0.7;
+	ROUGHNESS = 0.6;
 }
