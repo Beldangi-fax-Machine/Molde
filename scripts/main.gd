@@ -14,7 +14,6 @@ func _ready():
 	sky_material.albedo_color = Color(0.5, 0.8, 1.0)
 	sky.material = sky_material
 	env.sky = sky
-	env.ambient_light_source = Environment.AMBIENT_LIGHT_DISABLED
 	
 	world_env.environment = env
 	add_child(world_env)
