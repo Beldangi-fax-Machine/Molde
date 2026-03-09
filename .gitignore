@@ -1,0 +1,7 @@
+.import/
+.export/
+.export_presets.cfg
+.cache/
+*.log
+*.import
+.godot/

@@ -1,0 +1,4 @@
+[application]
+config/name="Molde"
+config/description="Godot 3D game with procedural terrain"
+run/main_scene="res://scenes/Main.tscn"
