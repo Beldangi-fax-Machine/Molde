@@ -18,7 +18,6 @@ func _ready():
 	sun.rotation.y = 0.3
 	sun.shadow_enabled = true
 	sun.shadow_blur = 1.0
-	sun.omni_range = 500.0
 	add_child(sun)
 	
 	# Create a visual sun in the sky (much higher)
