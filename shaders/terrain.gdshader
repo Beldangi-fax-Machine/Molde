@@ -1,8 +1,8 @@
 shader_type spatial;
 
 void fragment() {
-	// Use world position from camera view to create stationary pattern
-	vec3 world_pos = (inverse(VIEW) * vec4(VERTEX, 1.0)).xyz;
+	// Get world position from fragment position
+	vec3 world_pos = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	
 	// Large checkerboard squares so movement is obvious
 	float checker_size = 20.0;
