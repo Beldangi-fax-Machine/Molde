@@ -1,27 +1,23 @@
 shader_type spatial;
+render_mode cull_back;
 
 void fragment() {
-	// Get world position from fragment position
+	// Get world position 
 	vec3 world_pos = (WORLD_MATRIX * vec4(VERTEX, 1.0)).xyz;
 	
-	// Large checkerboard squares so movement is obvious
-	float checker_size = 20.0;
+	// Checkerboard pattern
+	float checker_size = 10.0;
 	float checker_x = mod(floor(world_pos.x / checker_size), 2.0);
 	float checker_z = mod(floor(world_pos.z / checker_size), 2.0);
 	float pattern = mod(checker_x + checker_z, 2.0);
 	
-	// Dark grass base color
-	vec3 grass_dark = vec3(0.08, 0.3, 0.08);
-	vec3 grass_light = vec3(0.15, 0.45, 0.12);
+	// Green colors for grass
+	vec3 dark_green = vec3(0.1, 0.35, 0.1);
+	vec3 light_green = vec3(0.2, 0.5, 0.15);
 	
-	vec3 color = mix(grass_dark, grass_light, pattern);
+	// Mix between dark and light green
+	vec3 color = mix(dark_green, light_green, pattern);
 	
-	// Apply lighting for depth
-	vec3 normal = normalize(NORMAL);
-	float light = dot(normal, normalize(vec3(0.7, 1.0, 0.5)));
-	light = light * 0.6 + 0.4;
-	
-	ALBEDO = color * light;
-	ROUGHNESS = 0.85;
-	METALLIC = 0.0;
+	ALBEDO = color;
+	ROUGHNESS = 0.8;
 }

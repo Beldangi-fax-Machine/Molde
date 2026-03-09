@@ -3,37 +3,47 @@ extends Node3D
 func _ready():
 	print("Main scene ready")
 	
-	# Set up environment with simple gradient sky
+	# Set up environment with gradient sky
 	var world_env = WorldEnvironment.new()
 	var env = Environment.new()
-	env.background_mode = Environment.BG_COLOR
-	env.background_color = Color(0.5, 0.8, 1.0)  # Light blue sky
+	env.background_mode = Environment.BG_SKY
+	
+	# Create sky gradient
+	var sky = Sky.new()
+	var sky_material = StandardMaterial3D.new()
+	sky_material.albedo_color = Color(0.5, 0.8, 1.0)
+	sky.material = sky_material
+	env.sky = sky
+	env.ambient_light_source = Environment.AMBIENT_LIGHT_DISABLED
 	
 	world_env.environment = env
 	add_child(world_env)
 	
-	# Add a directional light for visibility
+	# Add a directional light for visibility with shadows
 	var sun = DirectionalLight3D.new()
-	sun.rotation.x = -0.5
+	sun.rotation.x = -0.3  # Higher angle
 	sun.rotation.y = 0.3
+	sun.shadow_enabled = true
+	sun.shadow_blur = 1.0
+	sun.omni_range = 500.0
 	add_child(sun)
 	
-	# Create a visual sun in the sky
+	# Create a visual sun in the sky (much higher)
 	var sun_mesh = MeshInstance3D.new()
 	var sphere = SphereMesh.new()
-	sphere.radius = 3.0
-	sphere.height = 6.0
+	sphere.radius = 5.0
+	sphere.height = 10.0
 	sun_mesh.mesh = sphere
 	
-	# Position the sun in the sky
-	sun_mesh.position = Vector3(50, 40, -50)
+	# Position the sun much higher in the sky
+	sun_mesh.position = Vector3(80, 150, -80)
 	
 	# Create sun material
 	var sun_mat = StandardMaterial3D.new()
 	sun_mat.albedo_color = Color.YELLOW
 	sun_mat.emission_enabled = true
 	sun_mat.emission = Color.YELLOW
-	sun_mat.emission_energy = 2.0
+	sun_mat.emission_energy = 3.0
 	sun_mesh.set_surface_override_material(0, sun_mat)
 	
 	add_child(sun_mesh)
