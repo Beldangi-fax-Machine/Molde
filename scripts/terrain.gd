@@ -1,62 +1,96 @@
 extends Node3D
 
 var _viewer_node: Node3D
+var _terrain_chunks: Dictionary = {}
+var _chunk_size: float = 100.0
+var _render_distance: int = 3  # Render chunks 3 chunks away from player
+var _last_player_chunk: Vector2i = Vector2i(9999, 9999)
 
 func _ready() -> void:
 	_viewer_node = get_parent().get_node_or_null("Player")
 	if _viewer_node == null:
 		_viewer_node = self
-	
-	# Create a simple flat base ground instead of procedural terrain
-	_create_flat_ground()
 
-func _create_flat_ground() -> void:
-	# Create checkerboard ground with alternating green squares
-	var square_size = 30.0
-	var ground_size = 500.0
-	var half_size = ground_size / 2.0
-	
-	# Create a grid of alternating colored squares
-	var x = -half_size
-	while x < half_size:
-		var z = -half_size
-		while z < half_size:
-			# Determine if this square should be dark or bright green
-			var grid_x = int(x / square_size)
-			var grid_z = int(z / square_size)
-			var is_dark = (grid_x + grid_z) % 2 == 0
-			
-			# Create a plane for this square
-			var mesh = PlaneMesh.new()
-			mesh.size = Vector2(square_size, square_size)
-			
-			var mesh_inst = MeshInstance3D.new()
-			mesh_inst.mesh = mesh
-			mesh_inst.position = Vector3(x + square_size / 2.0, 3.5, z + square_size / 2.0)
-			
-			# Create material with appropriate green color
-			var mat = StandardMaterial3D.new()
-			if is_dark:
-				mat.albedo_color = Color(0.0, 0.5, 0.0)  # Dark green
-			else:
-				mat.albedo_color = Color(0.2, 0.8, 0.1)  # Bright green
-			mat.roughness = 0.8
-			
-			mesh_inst.set_surface_override_material(0, mat)
-			add_child(mesh_inst)
-			
-			z += square_size
-		x += square_size
-	
-	# Add single collision box for the entire ground
-	var static_body = StaticBody3D.new()
-	var collision_shape = CollisionShape3D.new()
-	var shape = BoxShape3D.new()
-	shape.size = Vector3(ground_size, 2, ground_size)
-	collision_shape.shape = shape
-	static_body.add_child(collision_shape)
-	static_body.position = Vector3(0, 2.5, 0)
-	add_child(static_body)
+	# Create initial terrain chunks around spawn
+	_update_terrain_chunks()
+
+func _create_terrain_chunk(chunk_x: int, chunk_z: int) -> MeshInstance3D:
+	# Create a single chunk of terrain
+	var mesh = PlaneMesh.new()
+	mesh.size = Vector2(_chunk_size, _chunk_size)
+	mesh.subdivide_width = 30  # Reduced subdivisions for performance
+	mesh.subdivide_depth = 30
+
+	var mesh_inst = MeshInstance3D.new()
+	mesh_inst.mesh = mesh
+
+	# Position chunk in world (ground level at Y=0)
+	var chunk_world_x = chunk_x * _chunk_size
+	var chunk_world_z = chunk_z * _chunk_size
+	mesh_inst.position = Vector3(chunk_world_x, 0.0, chunk_world_z)
+	mesh_inst.name = "Chunk_" + str(chunk_x) + "_" + str(chunk_z)
+
+	# Make chunk cast shadows and receive them
+	mesh_inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+
+	# Load and apply the grass shader
+	var shader = load("res://shaders/terrain.gdshader")
+	var mat = ShaderMaterial.new()
+	mat.shader = shader
+
+	# Set wind parameters
+	mat.set_shader_parameter("wind_strength", 0.3)
+	mat.set_shader_parameter("wind_speed", 1.5)
+
+	mesh_inst.set_surface_override_material(0, mat)
+
+	return mesh_inst
+
+func _update_terrain_chunks() -> void:
+	if not _viewer_node or not is_instance_valid(_viewer_node):
+		return
+
+	# Get player's current chunk position
+	var player_pos = _viewer_node.global_position
+	var player_chunk_x = int(floor(player_pos.x / _chunk_size))
+	var player_chunk_z = int(floor(player_pos.z / _chunk_size))
+	var player_chunk = Vector2i(player_chunk_x, player_chunk_z)
+
+	# Only update if player moved to a new chunk
+	if player_chunk == _last_player_chunk:
+		return
+
+	_last_player_chunk = player_chunk
+
+	# Track which chunks should exist
+	var chunks_to_keep: Dictionary = {}
+
+	# Create/show chunks around player
+	for x in range(-_render_distance, _render_distance + 1):
+		for z in range(-_render_distance, _render_distance + 1):
+			var chunk_x = player_chunk_x + x
+			var chunk_z = player_chunk_z + z
+			var chunk_key = Vector2i(chunk_x, chunk_z)
+
+			chunks_to_keep[chunk_key] = true
+
+			# Create chunk if it doesn't exist
+			if not _terrain_chunks.has(chunk_key):
+				var chunk = _create_terrain_chunk(chunk_x, chunk_z)
+				add_child(chunk)
+				_terrain_chunks[chunk_key] = chunk
+
+	# Remove chunks that are too far away
+	var chunks_to_remove: Array = []
+	for chunk_key in _terrain_chunks.keys():
+		if not chunks_to_keep.has(chunk_key):
+			chunks_to_remove.append(chunk_key)
+
+	for chunk_key in chunks_to_remove:
+		var chunk = _terrain_chunks[chunk_key]
+		chunk.queue_free()
+		_terrain_chunks.erase(chunk_key)
 
 func _process(_delta: float) -> void:
-	pass
+	# Update terrain chunks based on player position
+	_update_terrain_chunks()

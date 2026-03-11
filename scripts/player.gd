@@ -83,10 +83,12 @@ func _physics_process(delta: float) -> void:
 	
 	# Make movement proper - W/S forward/back by camera, A/D strafe left/right by camera horizontal
 	if input_x != 0.0 or input_z != 0.0:
-		# Get forward and right vectors based on camera's HORIZONTAL rotation only
-		var forward = Vector3(sin(camera_rot.y), 0, -cos(camera_rot.y))
-		var right = Vector3(cos(camera_rot.y), 0, sin(camera_rot.y))
-		
+		# Get camera's actual forward direction and project onto horizontal plane
+		var camera_forward = -camera.global_transform.basis.z
+		var forward = Vector3(camera_forward.x, 0, camera_forward.z).normalized()
+		# Calculate right vector (perpendicular to forward on horizontal plane)
+		var right = Vector3(-forward.z, 0, forward.x)
+
 		# W/S = forward/backward, A/D = left/right strafe
 		move_input = (forward * input_z + right * input_x).normalized()
 	else:
