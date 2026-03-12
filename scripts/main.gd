@@ -51,18 +51,12 @@ func _ready():
 	# Instantiate the player AFTER terrain
 	var player_scene = preload("res://scenes/Player.tscn")
 	var player = player_scene.instantiate()
-	player.position = Vector3(0, 2, 0)  # Spawn just above ground
+	player.position = Vector3(0, 10, 0)  # Spawn high above ground
 	player.name = "Player"  # Ensure name matches for time block detection
 	add_child(player)
 
 	# Add colored blocks around the world
 	_add_colored_blocks()
-
-	# Add camera to player
-	var camera = Camera3D.new()
-	camera.name = "Camera3D"
-	player.add_child(camera)
-	camera.position.y = 1.5
 
 func _add_colored_blocks() -> void:
 	# Red block - MORNING (6 AM)

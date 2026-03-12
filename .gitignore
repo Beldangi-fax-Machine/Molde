@@ -5,3 +5,13 @@
 *.log
 *.import
 .godot/
+
+# Claude Code MCP config (contains API key)
+.mcp.json
+
+# Environment files
+.env
+*.env
+
+# Generated 3D models (can be regenerated via Tripo)
+# models/*.glb
